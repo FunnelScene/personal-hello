@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Hello - Dashboard v2</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Serif+Display&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-base: #F7F4EF;
+            --bg-warm: #FAF8F5;
+            --bg-white: #FFFFFF;
+            --text-primary: #1A1816;
+            --text-secondary: #5C5650;
+            --text-muted: #8A857D;
+            --accent-coral: #E56F46;
+            --accent-coral-light: #FEF6F3;
+            --accent-coral-hover: #D4623C;
+            --accent-teal: #1F6A79;
+            --accent-teal-light: #E8F4F6;
+            --divider: #E8E4DD;
+            --divider-light: #F0EDE8;
+            --font-display: 'DM Serif Display', Georgia, serif;
+            --font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; font-family: var(--font-body); background: var(--bg-base); color: var(--text-primary); -webkit-font-smoothing: antialiased; }
+        
+        .app { display: flex; height: 100vh; }
+        
+        /* Sidebar */
+        .sidebar { width: 260px; background: var(--bg-white); border-right: 1px solid var(--divider); display: flex; flex-direction: column; padding: 24px 16px; flex-shrink: 0; }
+        .sidebar-header { display: flex; align-items: center; gap: 10px; margin-bottom: 32px; padding: 0 8px; }
+        .logo-mark { width: 36px; height: 36px; background: linear-gradient(135deg, var(--accent-coral) 0%, #E8845C 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 2px 8px rgba(229, 111, 70, 0.25); }
+        .logo-text { font-size: 16px; font-weight: 600; color: var(--text-primary); }
+        .sidebar-nav { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: var(--radius-md); border: none; background: transparent; color: var(--text-secondary); font-size: 15px; font-weight: 500; cursor: pointer; transition: all 0.15s ease; text-align: left; font-family: inherit; width: 100%; }
+        .nav-item:hover { background: var(--bg-warm); }
+        .nav-item.active { background: var(--accent-coral-light); color: var(--accent-coral); }
+        .sidebar-footer { border-top: 1px solid var(--divider); padding-top: 16px; margin-top: 16px; }
+        .user-badge { display: flex; align-items: center; gap: 12px; padding: 8px; }
+        .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-teal) 0%, #2A8A9A 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 16px; font-weight: 600; }
+        .user-info { display: flex; flex-direction: column; }
+        .user-name { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+        .user-email { font-size: 12px; color: var(--text-muted); }
+        
+        /* Main Content */
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 32px 40px; border-bottom: 1px solid var(--divider); background: var(--bg-white); gap: 24px; flex-wrap: wrap; }
+        .header-left { flex: 1; min-width: 200px; }
+        .page-title { font-family: var(--font-display); font-size: 24px; font-weight: 400; color: var(--text-primary); margin-bottom: 4px; }
+        .page-subtitle { font-size: 14px; color: var(--text-secondary); }
+        
+        /* Search Bar */
+        .search-bar { position: relative; width: 280px; }
+        .search-bar input { width: 100%; padding: 10px 16px 10px 40px; border: 1.5px solid var(--divider); border-radius: var(--radius-md); font-size: 14px; color: var(--text-primary); background: var(--bg-warm); font-family: inherit; transition: all 0.15s ease; }
+        .search-bar input:focus { outline: none; border-color: var(--accent-coral); background: var(--bg-white); box-shadow: 0 0 0 3px rgba(229, 111, 70, 0.1); }
+        .search-bar input::placeholder { color: var(--text-muted); }
+        .search-bar svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; }
+        
+        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; border-radius: var(--radius-md); font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.15s ease; border: none; font-family: inherit; }
+        .btn-primary { background: var(--accent-coral); color: white; box-shadow: 0 2px 8px rgba(229, 111, 70, 0.3); }
+        .btn-primary:hover { background: var(--accent-coral-hover); box-shadow: 0 4px 12px rgba(229, 111, 70, 0.4); transform: translateY(-1px); }
+        .btn-secondary { background: transparent; color: var(--text-primary); border: 1.5px solid var(--divider); }
+        .btn-secondary:hover { background: var(--bg-warm); border-color: var(--text-muted); }
+        .btn-sm { padding: 8px 14px; font-size: 13px; }
+        .btn-ghost { background: transparent; color: var(--text-secondary); border: none; padding: 8px 12px; }
+        .btn-ghost:hover { background: var(--bg-warm); color: var(--text-primary); }
+        
+        .content-area { flex: 1; padding: 32px 40px; overflow-y: auto; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.2s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        /* Folder Structure */
+        .folder-section { margin-bottom: 32px; }
+        .folder-header { display: flex; align-items: center; gap: 12px; padding: 12px 0; cursor: pointer; user-select: none; }
+        .folder-header:hover .folder-title { color: var(--accent-coral); }
+        .folder-icon { width: 32px; height: 32px; border-radius: var(--radius-sm); background: var(--accent-coral-light); display: flex; align-items: center; justify-content: center; color: var(--accent-coral); transition: all 0.15s ease; }
+        .folder-header.collapsed .folder-icon { background: var(--bg-warm); color: var(--text-muted); }
+        .folder-title { font-size: 16px; font-weight: 600; color: var(--text-primary); flex: 1; transition: color 0.15s ease; }
+        .folder-count { font-size: 13px; color: var(--text-muted); background: var(--bg-warm); padding: 4px 10px; border-radius: 100px; }
+        .folder-chevron { color: var(--text-muted); transition: transform 0.2s ease; }
+        .folder-header.collapsed .folder-chevron { transform: rotate(-90deg); }
+        .folder-content { padding-left: 44px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; margin-top: 8px; }
+        .folder-header.collapsed + .folder-content { display: none; }
+        
+        /* Cards */
+        .card { background: var(--bg-white); border-radius: var(--radius-lg); padding: 20px; box-shadow: 0 1px 3px rgba(26, 24, 22, 0.04), 0 4px 12px rgba(26, 24, 22, 0.04); transition: box-shadow 0.2s ease, transform 0.2s ease; }
+        .card:hover { box-shadow: 0 4px 12px rgba(26, 24, 22, 0.08), 0 8px 24px rgba(26, 24, 22, 0.06); transform: translateY(-2px); }
+        .card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+        .customer-avatar { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-teal) 0%, #2A8A9A 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; font-weight: 600; flex-shrink: 0; }
+        .template-icon { width: 44px; height: 44px; border-radius: var(--radius-md); background: var(--accent-coral-light); display: flex; align-items: center; justify-content: center; color: var(--accent-coral); flex-shrink: 0; }
+        .card-header-info { flex: 1; min-width: 0; }
+        .card-title { font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
+        .card-meta { font-size: 13px; color: var(--text-muted); }
+        .status-badge { padding: 4px 10px; border-radius: 100px; font-size: 12px; font-weight: 600; flex-shrink: 0; }
+        .status-sent { background: #E8F5E9; color: #2E7D32; }
+        .status-draft { background: #FFF3E0; color: #E65100; }
+        
+        .card-body { margin-bottom: 16px; }
+        .video-thumbnail { aspect-ratio: 16/9; border-radius: var(--radius-md); background: linear-gradient(145deg, #3D3A36 0%, #2A2826 100%); display: flex; align-items: center; justify-content: center; color: white; position: relative; overflow: hidden; }
+        .play-icon { width: 48px; height: 48px; background: rgba(255,255,255,0.95); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--text-primary); }
+        .template-greeting { font-size: 15px; font-weight: 500; color: var(--text-primary); font-style: italic; margin-bottom: 8px; }
+        .template-body { font-size: 14px; color: var(--text-secondary); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        
+        .card-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 16px; border-top: 1px solid var(--divider-light); }
+        .card-date { font-size: 13px; color: var(--text-muted); }
+        .card-actions { display: flex; gap: 8px; }
+        .card-btn { padding: 8px 14px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.15s ease; border: none; font-family: inherit; }
+        .card-btn-primary { background: var(--accent-coral); color: white; }
+        .card-btn-primary:hover { background: var(--accent-coral-hover); }
+        .card-btn-secondary { background: transparent; color: var(--text-secondary); border: 1px solid var(--divider); }
+        .card-btn-secondary:hover { background: var(--bg-warm); }
+        
+        /* Template Cards Grid */
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+        
+        /* Modal */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(26, 24, 22, 0.5); display: flex; align-items: center; justify-content: center; padding: 24px; z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.2s ease; }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .modal { width: 100%; max-width: 580px; max-height: 90vh; background: var(--bg-white); border-radius: var(--radius-xl); display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 24px 48px rgba(26, 24, 22, 0.2); transform: translateY(20px); transition: transform 0.2s ease; }
+        .modal-overlay.active .modal { transform: translateY(0); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 24px 28px; border-bottom: 1px solid var(--divider); }
+        .modal-title { font-family: var(--font-display); font-size: 20px; font-weight: 400; color: var(--text-primary); }
+        .modal-close { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border: none; background: transparent; color: var(--text-muted); cursor: pointer; border-radius: var(--radius-sm); transition: all 0.15s ease; }
+        .modal-close:hover { background: var(--bg-warm); color: var(--text-primary); }
+        .modal-body { padding: 28px; overflow-y: auto; flex: 1; }
+        .modal-footer { display: flex; gap: 12px; justify-content: flex-end; padding: 20px 28px; border-top: 1px solid var(--divider); background: var(--bg-warm); }
+        
+        /* Forms */
+        .form-group { margin-bottom: 20px; }
+        .form-group:last-child { margin-bottom: 0; }
+        .form-label { display: block; font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px; }
+        .form-input { width: 100%; padding: 14px 16px; border: 1.5px solid var(--divider); border-radius: var(--radius-md); font-size: 15px; color: var(--text-primary); background: var(--bg-white); transition: border-color 0.15s ease, box-shadow 0.15s ease; font-family: inherit; }
+        .form-input:focus { outline: none; border-color: var(--accent-coral); box-shadow: 0 0 0 3px rgba(229, 111, 70, 0.1); }
+        .form-input::placeholder { color: var(--text-muted); }
+        .form-hint { font-size: 13px; color: var(--text-muted); margin-top: 6px; }
+        .form-textarea { min-height: 100px; resize: vertical; }
+        
+        /* Rich Text Editor */
+        .rich-editor { border: 1.5px solid var(--divider); border-radius: var(--radius-md); overflow: hidden; background: var(--bg-white); transition: border-color 0.15s ease, box-shadow 0.15s ease; }
+        .rich-editor:focus-within { border-color: var(--accent-coral); box-shadow: 0 0 0 3px rgba(229, 111, 70, 0.1); }
+        .rich-editor-toolbar { display: flex; gap: 4px; padding: 8px 12px; border-bottom: 1px solid var(--divider); background: var(--bg-warm); flex-wrap: wrap; }
+        .toolbar-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border: none; background: transparent; color: var(--text-secondary); cursor: pointer; border-radius: var(--radius-sm); transition: all 0.15s ease; }
+        .toolbar-btn:hover { background: var(--bg-white); color: var(--text-primary); }
+        .toolbar-btn.active { background: var(--accent-coral-light); color: var(--accent-coral); }
+        .toolbar-divider { width: 1px; height: 24px; background: var(--divider); margin: 4px 8px; }
+        .rich-editor-content { min-height: 120px; padding: 14px 16px; font-size: 15px; color: var(--text-primary); line-height: 1.6; }
+        .rich-editor-content:focus { outline: none; }
+        .rich-editor-content h3 { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+        .rich-editor-content p { margin-bottom: 8px; }
+        .rich-editor-content a { color: var(--accent-teal); text-decoration: underline; }
+        .rich-editor-content ul, .rich-editor-content ol { padding-left: 24px; margin-bottom: 8px; }
+        
+        /* Template selector */
+        .template-select { display: flex; flex-direction: column; gap: 8px; }
+        .template-option { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border: 1.5px solid var(--divider); border-radius: var(--radius-md); background: var(--bg-white); cursor: pointer; transition: all 0.15s ease; text-align: left; font-family: inherit; width: 100%; }
+        .template-option:hover { border-color: var(--text-muted); }
+        .template-option.selected { border-color: var(--accent-coral); background: var(--accent-coral-light); }
+        .template-option-name { font-size: 15px; font-weight: 500; color: var(--text-primary); }
+        .template-option-meta { font-size: 13px; color: var(--text-muted); }
+        
+        /* Progress Bar */
+        .progress-bar { display: flex; align-items: center; justify-content: center; padding: 20px 28px; background: var(--bg-warm); gap: 8px; }
+        .progress-step { display: flex; align-items: center; gap: 8px; color: var(--text-muted); }
+        .progress-step.active { color: var(--accent-coral); }
+        .progress-step.active .progress-dot { background: var(--accent-coral); color: white; }
+        .progress-dot { width: 28px; height: 28px; border-radius: 50%; background: var(--divider); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; }
+        .progress-label { font-size: 13px; font-weight: 500; }
+        .progress-line { width: 40px; height: 2px; background: var(--divider); }
+        
+        .step-content { display: none; }
+        .step-content.active { display: block; animation: fadeIn 0.2s ease; }
+        
+        /* Video Upload */
+        .video-upload-area { border: 2px dashed var(--divider); border-radius: var(--radius-lg); padding: 48px 32px; display: flex; flex-direction: column; align-items: center; text-align: center; background: var(--bg-warm); margin-bottom: 20px; }
+        .upload-icon { color: #D8D2C9; margin-bottom: 16px; }
+        .upload-title { font-size: 18px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px; }
+        .upload-description { font-size: 14px; color: var(--text-secondary); margin-bottom: 24px; }
+        .upload-buttons { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+        
+        .video-tips { background: var(--bg-warm); border-radius: var(--radius-md); padding: 16px 20px; }
+        .tips-title { font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 12px; }
+        .tips-list { margin: 0; padding-left: 20px; font-size: 14px; color: var(--text-secondary); line-height: 1.8; }
+        
+        /* Success State */
+        .success-state { text-align: center; padding: 20px 0; }
+        .success-icon { width: 80px; height: 80px; background: #E8F5E9; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; color: #2E7D32; }
+        .success-title { font-family: var(--font-display); font-size: 22px; color: var(--text-primary); margin-bottom: 8px; }
+        .success-description { font-size: 15px; color: var(--text-secondary); margin-bottom: 24px; max-width: 320px; margin-left: auto; margin-right: auto; }
+        .link-copy-box { display: flex; gap: 8px; max-width: 100%; margin-bottom: 20px; }
+        .link-input { flex: 1; padding: 12px 16px; border: 1.5px solid var(--divider); border-radius: var(--radius-md); font-size: 14px; color: var(--text-secondary); background: var(--bg-warm); min-width: 0; }
+        
+        .success-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+        
+        /* Edit Page indicator */
+        .edit-notice { display: flex; align-items: center; gap: 8px; padding: 12px 16px; background: var(--accent-teal-light); border-radius: var(--radius-md); margin-bottom: 20px; }
+        .edit-notice svg { color: var(--accent-teal); flex-shrink: 0; }
+        .edit-notice-text { font-size: 14px; color: var(--accent-teal); }
+        
+        /* Empty search state */
+        .empty-search { text-align: center; padding: 60px 40px; }
+        .empty-search-icon { color: var(--divider); margin-bottom: 16px; }
+        .empty-search-title { font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+        .empty-search-text { font-size: 14px; color: var(--text-muted); }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-mark">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                    </svg>
+                </div>
+                <span class="logo-text">Personal Hello</span>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-tab="pages">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                    Pages
+                </button>
+                
+                <button class="nav-item" data-tab="templates">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="3" y1="9" x2="21" y2="9"/>
+                        <line x1="9" y1="21" x2="9" y2="9"/>
+                    </svg>
+                    Templates
+                </button>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="user-badge">
+                    <div class="user-avatar">P</div>
+                    <div class="user-info">
+                        <span class="user-name">Phil</span>
+                        <span class="user-email">phil@funnelscene.com</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <h1 class="page-title" id="pageTitle">Pages</h1>
+                    <p class="page-subtitle" id="pageSubtitle">Send personalized welcome videos to your customers</p>
+                </div>
+                
+                <!-- Search Bar (only on Pages tab) -->
+                <div class="search-bar" id="searchBar">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="M21 21l-4.35-4.35"/>
+                    </svg>
+                    <input type="text" placeholder="Search by customer name..." id="searchInput">
+                </div>
+                
+                <button class="btn btn-primary" id="createBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"/>
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                    <span id="createBtnText">New Page</span>
+                </button>
+            </header>
+            
+            <div class="content-area">
+                <!-- Pages Tab with Folders -->
+                <div class="tab-content active" id="pages-tab">
+                    <div id="pagesContent">
+                        <!-- Legacy Builders Folder -->
+                        <div class="folder-section">
+                            <div class="folder-header" onclick="toggleFolder(this)">
+                                <div class="folder-icon">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                                    </svg>
+                                </div>
+                                <span class="folder-title">Legacy Builders Course</span>
+                                <span class="folder-count">3 pages</span>
+                                <svg class="folder-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="6 9 12 15 18 9"/>
+                                </svg>
+                            </div>
+                            <div class="folder-content">
+                                <div class="card" data-customer="Sarah Mitchell">
+                                    <div class="card-header">
+                                        <div class="customer-avatar">S</div>
+                                        <div class="card-header-info">
+                                            <h3 class="card-title">Sarah Mitchell</h3>
+                                            <p class="card-meta">sarah@example.com</p>
+                                        </div>
+                                        <span class="status-badge status-sent">Sent</span>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="video-thumbnail">
+                                            <div class="play-icon">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                                    <polygon points="5 3 19 12 5 21 5 3"/>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer">
+                                        <span class="card-date">Jan 22, 2:30 PM</span>
+                                        <div class="card-actions">
+                                            <button class="card-btn card-btn-secondary" onclick="openEditPageModal()">Edit</button>
+                                            <button class="card-btn card-btn-secondary">Copy Link</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="card" data-customer="Emma Wilson">
+                                    <div class="card-header">
+                                        <div class="customer-avatar">E</div>
+                                        <div class="card-header-info">
+                                            <h3 class="card-title">Emma Wilson</h3>
+                                            <p class="card-meta">emma@example.com</p>
+                                        </div>
+                                        <span class="status-badge status-draft">Draft</span>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="video-thumbnail" style="background: var(--divider);">
+                                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--text-muted);">
+                                                <polygon points="23 7 16 12 23 17 23 7"/>
+                                                <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer">
+                                        <span class="card-date">Draft</span>
+                                        <div class="card-actions">
+                                            <button class="card-btn card-btn-secondary" onclick="openEditPageModal()">Edit</button>
+                                            <button class="card-btn card-btn-primary">Continue</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="card" data-customer="Michael Chen">
+                                    <div class="card-header">
+                                        <div class="customer-avatar">M</div>
+                                        <div class="card-header-info">
+                                            <h3 class="card-title">Michael Chen</h3>
+                                            <p class="card-meta">michael@example.com</p>
+                                        </div>
+                                        <span class="status-badge status-sent">Sent</span>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="video-thumbnail">
+                                            <div class="play-icon">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                                    <polygon points="5 3 19 12 5 21 5 3"/>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer">
+                                        <span class="card-date">Jan 20, 11:45 AM</span>
+                                        <div class="card-actions">
+                                            <button class="card-btn card-btn-secondary" onclick="openEditPageModal()">Edit</button>
+                                            <button class="card-btn card-btn-secondary">Copy Link</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- VIP Coaching Folder -->
+                        <div class="folder-section">
+                            <div class="folder-header" onclick="toggleFolder(this)">
+                                <div class="folder-icon">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                                    </svg>
+                                </div>
+                                <span class="folder-title">VIP Coaching</span>
+                                <span class="folder-count">2 pages</span>
+                                <svg class="folder-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="6 9 12 15 18 9"/>
+                                </svg>
+                            </div>
+                            <div class="folder-content">
+                                <div class="card" data-customer="James Cooper">
+                                    <div class="card-header">
+                                        <div class="customer-avatar">J</div>
+                                        <div class="card-header-info">
+                                            <h3 class="card-title">James Cooper</h3>
+                                            <p class="card-meta">james@example.com</p>
+                                        </div>
+                                        <span class="status-badge status-sent">Sent</span>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="video-thumbnail">
+                                            <div class="play-icon">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                                    <polygon points="5 3 19 12 5 21 5 3"/>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer">
+                                        <span class="card-date">Jan 22, 9:15 AM</span>
+                                        <div class="card-actions">
+                                            <button class="card-btn card-btn-secondary" onclick="openEditPageModal()">Edit</button>
+                                            <button class="card-btn card-btn-secondary">Copy Link</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="card" data-customer="Lisa Park">
+                                    <div class="card-header">
+                                        <div class="customer-avatar">L</div>
+                                        <div class="card-header-info">
+                                            <h3 class="card-title">Lisa Park</h3>
+                                            <p class="card-meta">lisa@example.com</p>
+                                        </div>
+                                        <span class="status-badge status-sent">Sent</span>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="video-thumbnail">
+                                            <div class="play-icon">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                                    <polygon points="5 3 19 12 5 21 5 3"/>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer">
+                                        <span class="card-date">Jan 19, 3:20 PM</span>
+                                        <div class="card-actions">
+                                            <button class="card-btn card-btn-secondary" onclick="openEditPageModal()">Edit</button>
+                                            <button class="card-btn card-btn-secondary">Copy Link</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Empty Search State -->
+                    <div class="empty-search" id="emptySearch" style="display: none;">
+                        <div class="empty-search-icon">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <circle cx="11" cy="11" r="8"/>
+                                <path d="M21 21l-4.35-4.35"/>
+                            </svg>
+                        </div>
+                        <h3 class="empty-search-title">No results found</h3>
+                        <p class="empty-search-text">Try searching for a different name</p>
+                    </div>
+                </div>
+                
+                <!-- Templates Tab -->
+                <div class="tab-content" id="templates-tab">
+                    <div class="card-grid">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="template-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                        <line x1="3" y1="9" x2="21" y2="9"/>
+                                        <line x1="9" y1="21" x2="9" y2="9"/>
+                                    </svg>
+                                </div>
+                                <div class="card-header-info">
+                                    <h3 class="card-title">Legacy Builders Course</h3>
+                                    <p class="card-meta">2 buttons • 3 pages sent</p>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <p class="template-greeting">"Welcome to Legacy Builders!"</p>
+                                <p class="template-body">You just made an incredible decision. Here's what to do next to get started on your journey...</p>
+                            </div>
+                            <div class="card-footer">
+                                <span class="card-date">Created Jan 15</span>
+                                <div class="card-actions">
+                                    <button class="card-btn card-btn-secondary" onclick="openModal('createTemplateModal')">Edit</button>
+                                    <button class="card-btn card-btn-primary" onclick="openModal('createHelloModal')">Use</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="template-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                        <line x1="3" y1="9" x2="21" y2="9"/>
+                                        <line x1="9" y1="21" x2="9" y2="9"/>
+                                    </svg>
+                                </div>
+                                <div class="card-header-info">
+                                    <h3 class="card-title">VIP Coaching</h3>
+                                    <p class="card-meta">2 buttons • 2 pages sent</p>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <p class="template-greeting">"Welcome to VIP Coaching!"</p>
+                                <p class="template-body">I'm so excited to work with you personally. Let's get you set up and ready for our first session...</p>
+                            </div>
+                            <div class="card-footer">
+                                <span class="card-date">Created Jan 20</span>
+                                <div class="card-actions">
+                                    <button class="card-btn card-btn-secondary" onclick="openModal('createTemplateModal')">Edit</button>
+                                    <button class="card-btn card-btn-primary" onclick="openModal('createHelloModal')">Use</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Create Page Modal -->
+    <div class="modal-overlay" id="createHelloModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Create Page</h2>
+                <button class="modal-close" onclick="closeModal('createHelloModal')">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="progress-bar">
+                <div class="progress-step active" id="step1Indicator">
+                    <span class="progress-dot">1</span>
+                    <span class="progress-label">Details</span>
+                </div>
+                <div class="progress-line"></div>
+                <div class="progress-step" id="step2Indicator">
+                    <span class="progress-dot">2</span>
+                    <span class="progress-label">Video</span>
+                </div>
+                <div class="progress-line"></div>
+                <div class="progress-step" id="step3Indicator">
+                    <span class="progress-dot">3</span>
+                    <span class="progress-label">Send</span>
+                </div>
+            </div>
+            
+            <div class="modal-body">
+                <div class="step-content active" id="step1Content">
+                    <div class="form-group">
+                        <label class="form-label">Customer Name</label>
+                        <input type="text" class="form-input" id="customerName" placeholder="e.g. Sarah Mitchell">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Customer Email</label>
+                        <input type="email" class="form-input" id="customerEmail" placeholder="e.g. sarah@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Template</label>
+                        <div class="template-select">
+                            <button class="template-option selected" onclick="selectTemplate(this)">
+                                <span class="template-option-name">Legacy Builders Course</span>
+                                <span class="template-option-meta">2 buttons</span>
+                            </button>
+                            <button class="template-option" onclick="selectTemplate(this)">
+                                <span class="template-option-name">VIP Coaching</span>
+                                <span class="template-option-meta">2 buttons</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="step-content" id="step2Content">
+                    <div class="video-upload-area">
+                        <div class="upload-icon">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <polygon points="23 7 16 12 23 17 23 7"/>
+                                <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                            </svg>
+                        </div>
+                        <h3 class="upload-title">Record or upload your video</h3>
+                        <p class="upload-description">A quick 20-second hello is all it takes. Be authentic, be you.</p>
+                        <div class="upload-buttons">
+                            <button class="btn btn-primary">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <circle cx="12" cy="12" r="3" fill="currentColor"/>
+                                </svg>
+                                Record Video
+                            </button>
+                            <button class="btn btn-secondary">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="17 8 12 3 7 8"/>
+                                    <line x1="12" y1="3" x2="12" y2="15"/>
+                                </svg>
+                                Upload File
+                            </button>
+                        </div>
+                    </div>
+                    <div class="video-tips">
+                        <h4 class="tips-title">Quick tips:</h4>
+                        <ul class="tips-list">
+                            <li>Use their name in the first 5 seconds</li>
+                            <li>Shoot vertically on your phone</li>
+                            <li>Natural lighting works best</li>
+                            <li>Keep it under 60 seconds</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="step-content" id="step3Content">
+                    <div class="success-state">
+                        <div class="success-icon">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                        </div>
+                        <h2 class="success-title">Your page is ready!</h2>
+                        <p class="success-description">Copy the link to send manually, or customize the page content first.</p>
+                        <div class="link-copy-box">
+                            <input type="text" class="link-input" value="https://hello.personal.io/p/abc123" readonly>
+                            <button class="btn btn-secondary btn-sm">Copy</button>
+                        </div>
+                        <div class="success-actions">
+                            <button class="btn btn-secondary" onclick="openEditPageModal(); closeModal('createHelloModal');">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                </svg>
+                                Edit Page
+                            </button>
+                            <button class="btn btn-primary">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="22" y1="2" x2="11" y2="13"/>
+                                    <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                                </svg>
+                                Send Email
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="backBtn" style="display: none;" onclick="prevStep()">Back</button>
+                <div style="flex: 1;"></div>
+                <button class="btn btn-primary" id="nextBtn" onclick="nextStep()">Continue</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Edit Page Modal -->
+    <div class="modal-overlay" id="editPageModal">
+        <div class="modal" style="max-width: 640px;">
+            <div class="modal-header">
+                <h2 class="modal-title">Edit Page</h2>
+                <button class="modal-close" onclick="closeModal('editPageModal')">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="edit-notice">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="16" x2="12" y2="12"/>
+                        <line x1="12" y1="8" x2="12.01" y2="8"/>
+                    </svg>
+                    <span class="edit-notice-text">Changes only affect this page, not the template</span>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Customer Name</label>
+                    <input type="text" class="form-input" value="Sarah Mitchell">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Greeting Headline</label>
+                    <input type="text" class="form-input" value="Welcome to Legacy Builders!">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Body Content</label>
+                    <div class="rich-editor">
+                        <div class="rich-editor-toolbar">
+                            <button class="toolbar-btn" title="Bold">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/>
+                                    <path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/>
+                                </svg>
+                            </button>
+                            <button class="toolbar-btn" title="Italic">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="19" y1="4" x2="10" y2="4"/>
+                                    <line x1="14" y1="20" x2="5" y2="20"/>
+                                    <line x1="15" y1="4" x2="9" y2="20"/>
+                                </svg>
+                            </button>
+                            <div class="toolbar-divider"></div>
+                            <button class="toolbar-btn" title="Heading">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M6 12h12"/>
+                                    <path d="M6 4v16"/>
+                                    <path d="M18 4v16"/>
+                                </svg>
+                            </button>
+                            <button class="toolbar-btn" title="Bullet List">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="8" y1="6" x2="21" y2="6"/>
+                                    <line x1="8" y1="12" x2="21" y2="12"/>
+                                    <line x1="8" y1="18" x2="21" y2="18"/>
+                                    <line x1="3" y1="6" x2="3.01" y2="6"/>
+                                    <line x1="3" y1="12" x2="3.01" y2="12"/>
+                                    <line x1="3" y1="18" x2="3.01" y2="18"/>
+                                </svg>
+                            </button>
+                            <button class="toolbar-btn" title="Numbered List">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="10" y1="6" x2="21" y2="6"/>
+                                    <line x1="10" y1="12" x2="21" y2="12"/>
+                                    <line x1="10" y1="18" x2="21" y2="18"/>
+                                    <path d="M4 6h1v4"/>
+                                    <path d="M4 10h2"/>
+                                    <path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/>
+                                </svg>
+                            </button>
+                            <div class="toolbar-divider"></div>
+                            <button class="toolbar-btn" title="Link">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="rich-editor-content" contenteditable="true">
+                            <h3>Here's what to do next:</h3>
+                            <ol>
+                                <li>Check your inbox for your login details</li>
+                                <li>Complete the quick-start guide inside</li>
+                                <li>Join the community to connect with others</li>
+                            </ol>
+                            <p>If you have any questions, just reply to this email!</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Video</label>
+                    <div style="display: flex; gap: 16px; align-items: flex-start;">
+                        <div class="video-thumbnail" style="width: 160px; aspect-ratio: 9/14; flex-shrink: 0;">
+                            <div class="play-icon" style="width: 40px; height: 40px;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <polygon points="5 3 19 12 5 21 5 3"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div style="flex: 1;">
+                            <button class="btn btn-secondary btn-sm" style="margin-bottom: 8px;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="17 8 12 3 7 8"/>
+                                    <line x1="12" y1="3" x2="12" y2="15"/>
+                                </svg>
+                                Replace Video
+                            </button>
+                            <p class="form-hint">Upload a new video to replace the current one</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Primary Button</label>
+                    <div style="display: flex; gap: 12px;">
+                        <input type="text" class="form-input" value="Access Your Course" style="flex: 1;">
+                        <input type="url" class="form-input" value="https://learn.example.com" style="flex: 1.5;">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Secondary Button</label>
+                    <div style="display: flex; gap: 12px;">
+                        <input type="text" class="form-input" value="Join Community" style="flex: 1;">
+                        <input type="url" class="form-input" value="https://community.example.com" style="flex: 1.5;">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('editPageModal')">Cancel</button>
+                <button class="btn btn-primary">Save Changes</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Create Template Modal -->
+    <div class="modal-overlay" id="createTemplateModal">
+        <div class="modal" style="max-width: 640px;">
+            <div class="modal-header">
+                <h2 class="modal-title">Create Template</h2>
+                <button class="modal-close" onclick="closeModal('createTemplateModal')">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Template Name</label>
+                    <input type="text" class="form-input" placeholder="e.g. Legacy Builders Course">
+                    <p class="form-hint">Internal name to help you identify this template</p>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Greeting Headline</label>
+                    <input type="text" class="form-input" placeholder="e.g. Welcome to Legacy Builders!">
+                    <p class="form-hint">Shown above your video. Customer name is added automatically.</p>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Body Content</label>
+                    <div class="rich-editor">
+                        <div class="rich-editor-toolbar">
+                            <button class="toolbar-btn" title="Bold">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/>
+                                    <path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/>
+                                </svg>
+                            </button>
+                            <button class="toolbar-btn" title="Italic">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="19" y1="4" x2="10" y2="4"/>
+                                    <line x1="14" y1="20" x2="5" y2="20"/>
+                                    <line x1="15" y1="4" x2="9" y2="20"/>
+                                </svg>
+                            </button>
+                            <div class="toolbar-divider"></div>
+                            <button class="toolbar-btn" title="Heading">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M6 12h12"/>
+                                    <path d="M6 4v16"/>
+                                    <path d="M18 4v16"/>
+                                </svg>
+                            </button>
+                            <button class="toolbar-btn" title="Bullet List">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="8" y1="6" x2="21" y2="6"/>
+                                    <line x1="8" y1="12" x2="21" y2="12"/>
+                                    <line x1="8" y1="18" x2="21" y2="18"/>
+                                    <line x1="3" y1="6" x2="3.01" y2="6"/>
+                                    <line x1="3" y1="12" x2="3.01" y2="12"/>
+                                    <line x1="3" y1="18" x2="3.01" y2="18"/>
+                                </svg>
+                            </button>
+                            <button class="toolbar-btn" title="Numbered List">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="10" y1="6" x2="21" y2="6"/>
+                                    <line x1="10" y1="12" x2="21" y2="12"/>
+                                    <line x1="10" y1="18" x2="21" y2="18"/>
+                                    <path d="M4 6h1v4"/>
+                                    <path d="M4 10h2"/>
+                                    <path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/>
+                                </svg>
+                            </button>
+                            <div class="toolbar-divider"></div>
+                            <button class="toolbar-btn" title="Link">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="rich-editor-content" contenteditable="true" data-placeholder="Enter your message content...">
+                            <p></p>
+                        </div>
+                    </div>
+                    <p class="form-hint">Use formatting to make your message clear and scannable</p>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Primary Button</label>
+                    <div style="display: flex; gap: 12px;">
+                        <input type="text" class="form-input" placeholder="Button label" style="flex: 1;">
+                        <input type="url" class="form-input" placeholder="https://..." style="flex: 1.5;">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Secondary Button (optional)</label>
+                    <div style="display: flex; gap: 12px;">
+                        <input type="text" class="form-input" placeholder="Button label" style="flex: 1;">
+                        <input type="url" class="form-input" placeholder="https://..." style="flex: 1.5;">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('createTemplateModal')">Cancel</button>
+                <button class="btn btn-primary">Save Template</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Tab switching
+        const navItems = document.querySelectorAll('.nav-item');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const tab = item.dataset.tab;
+                navItems.forEach(nav => nav.classList.remove('active'));
+                item.classList.add('active');
+                tabContents.forEach(content => content.classList.remove('active'));
+                document.getElementById(tab + '-tab').classList.add('active');
+                
+                // Show/hide search bar
+                document.getElementById('searchBar').style.display = tab === 'pages' ? 'block' : 'none';
+                
+                if (tab === 'pages') {
+                    document.getElementById('pageTitle').textContent = 'Pages';
+                    document.getElementById('pageSubtitle').textContent = 'Send personalized welcome videos to your customers';
+                    document.getElementById('createBtnText').textContent = 'New Page';
+                } else {
+                    document.getElementById('pageTitle').textContent = 'Templates';
+                    document.getElementById('pageSubtitle').textContent = 'Create reusable templates for different offers';
+                    document.getElementById('createBtnText').textContent = 'New Template';
+                }
+            });
+        });
+        
+        // Create button
+        document.getElementById('createBtn').addEventListener('click', () => {
+            const activeTab = document.querySelector('.nav-item.active').dataset.tab;
+            openModal(activeTab === 'pages' ? 'createHelloModal' : 'createTemplateModal');
+        });
+        
+        // Folder toggle
+        function toggleFolder(header) {
+            header.classList.toggle('collapsed');
+        }
+        
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            const cards = document.querySelectorAll('#pages-tab .card');
+            const folders = document.querySelectorAll('.folder-section');
+            let hasResults = false;
+            
+            if (query === '') {
+                // Show all
+                folders.forEach(f => f.style.display = 'block');
+                cards.forEach(c => c.style.display = 'block');
+                document.getElementById('emptySearch').style.display = 'none';
+                document.getElementById('pagesContent').style.display = 'block';
+                return;
+            }
+            
+            // Hide folders, show matching cards
+            folders.forEach(folder => {
+                const folderCards = folder.querySelectorAll('.card');
+                let folderHasMatch = false;
+                
+                folderCards.forEach(card => {
+                    const customerName = card.dataset.customer.toLowerCase();
+                    if (customerName.includes(query)) {
+                        card.style.display = 'block';
+                        folderHasMatch = true;
+                        hasResults = true;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+                
+                folder.style.display = folderHasMatch ? 'block' : 'none';
+                // Expand folder if has match
+                if (folderHasMatch) {
+                    folder.querySelector('.folder-header').classList.remove('collapsed');
+                }
+            });
+            
+            document.getElementById('emptySearch').style.display = hasResults ? 'none' : 'block';
+            document.getElementById('pagesContent').style.display = hasResults ? 'block' : 'none';
+        });
+        
+        // Modal functions
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            document.body.style.overflow = '';
+            if (modalId === 'createHelloModal') { currentStep = 1; updateStepUI(); }
+        }
+        
+        function openEditPageModal() {
+            openModal('editPageModal');
+        }
+        
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(overlay.id); });
+        });
+        
+        // Step navigation
+        let currentStep = 1;
+        
+        function nextStep() { if (currentStep < 3) { currentStep++; updateStepUI(); } }
+        function prevStep() { if (currentStep > 1) { currentStep--; updateStepUI(); } }
+        
+        function updateStepUI() {
+            for (let i = 1; i <= 3; i++) {
+                document.getElementById('step' + i + 'Indicator').classList.toggle('active', i <= currentStep);
+            }
+            document.querySelectorAll('.step-content').forEach(c => c.classList.remove('active'));
+            document.getElementById('step' + currentStep + 'Content').classList.add('active');
+            
+            const titles = ['Create Page', 'Record Your Video', 'Your page is ready!'];
+            document.getElementById('modalTitle').textContent = titles[currentStep - 1];
+            
+            document.getElementById('backBtn').style.display = currentStep > 1 ? 'flex' : 'none';
+            document.getElementById('nextBtn').style.display = currentStep < 3 ? 'flex' : 'none';
+            
+            // Hide footer on step 3 (actions are in the content)
+            document.querySelector('#createHelloModal .modal-footer').style.display = currentStep === 3 ? 'none' : 'flex';
+        }
+        
+        function selectTemplate(element) {
+            document.querySelectorAll('.template-option').forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+        }
+    </script>
+</body>
+</html>
